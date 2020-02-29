@@ -1,0 +1,306 @@
+body{
+    /* height: auto; */
+    margin: 0px;
+    padding: 0px;
+    height: 2110px;
+    font-family: Arial, Helvetica, sans-serif;
+    position: relative;
+}
+/* Font */
+a,h2,h3,h4,h5{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/*-----------------------Header------------------------------- */
+header{
+    background: url("/Assignment/image/header_image.jpg");
+    background-size: 100% 100%;
+    height: 300px;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+}
+header>h3{
+    background-color: yellow;
+    line-height: 50px;
+    width: 150px;
+    text-align: center;
+    margin: 0px;
+    padding: 5px;
+    padding-left: 20px;
+    border-bottom-left-radius: 50px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+header>img{
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+header>div{
+    text-align: center;
+    position: absolute;
+    bottom: 70px;
+    left: 100px;
+}
+header>div>h2{
+    margin: 0px;
+    padding: 0px;
+    font-weight: bolder;
+    color: orange;
+    font-size: x-large;
+}
+header>div>h4{
+    padding: 0px;
+    margin: 0px;
+    color: orangered;
+}
+
+/*-----------------------Nav------------------------------- */
+nav{
+    background-color: #ffff00;
+    margin: 0px;
+    padding: 0px;
+    height: 60px;
+    position: relative;
+}
+nav>ul.menu{
+    margin: 0px;
+    padding: 5px;
+    padding-left: 40px;
+    list-style: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+nav>ul.menu>li{
+    margin: 0px;
+    margin-right: 30px;
+    padding: 10px;
+    width: 100px;
+    line-height: 30px;
+    font-size: large;
+    font-weight: bolder;
+    display: inline-block;
+    text-align: center;
+    /* background-color: violet; */
+}
+nav>ul.menu>li>a{
+    text-decoration: none;
+    color: black;
+}
+nav>ul.menu>li:hover>div{
+    width: 100px;
+    height: 5px;
+    background-color: black;
+}
+
+nav>ul.menu>li:hover{
+    background-color: #e6e600;
+    box-shadow: yellowgreen 0px 0px 5px 5px;
+    font-size: unset;
+
+}
+
+nav>ul.contact{
+    margin: 0px;
+    padding: 5px;
+    padding-left: 40px;
+    list-style: none;
+    /* background-color: lightcoral; */
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+nav>ul.contact>li{
+    margin: 0px;
+    margin-right: 0px;
+    padding: 10px;
+    width: 240px;
+    line-height: 30px;
+    font-size: small;
+    display: inline-block;
+    /* background-color: violet; */
+}
+nav>ul.contact>li>img{
+    margin: 5px 10px;
+    padding: 0px;
+    clear: both;
+    float: left;
+}
+nav>ul.contact>li>p{
+    margin: 0px;
+    padding: 0px;
+}
+nav>ul.contact>li#special>p{
+    margin-right: 0px;
+    padding-right: 0px;
+}
+nav>ul.contact>li#special{
+    width: 130px;
+    /* background-color: lawngreen; */
+}
+/*-----------------------article------------------------------- */
+
+article{
+    float: left;
+    background-color: #3399ff;
+    width: 75%;
+    height: 1650px;
+}
+
+article>div.box-contents{
+    margin: 0px 10px;
+    background-color: white;
+
+}
+article>div.box-contents>div.box-content{
+    margin: 20px;
+    padding: 20px;
+    /* background-color: blueviolet; */
+}
+.box-content>h3{
+    margin: 0px;
+    padding: 0px;
+    background-color: #00ffff;
+    line-height: 30px;
+    text-align: center;
+    width: 200px;
+    border-radius: 15px 15px 15px 1px;
+}
+.box-content>ul{
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    border: solid #ff66cc 2px;
+    border-radius: 20px;
+    border-top-left-radius: 1px;
+}
+.box-content>ul>li{
+    margin: 5px;
+    padding: 0px;
+    display: block;
+    background-image: url("/Assignment/image/select.png");
+    background-repeat: no-repeat;
+    background-position: left;
+    background-color: #ffff99;
+    position: relative;
+    height: 100px
+}
+.box-content>ul>li>a{
+    margin: 10px 50px;
+    display: block;
+    text-decoration: none;
+    color: #ff3300;
+}
+.box-content>ul>li>a>p{
+    /* width: 700px; */
+    width: auto;
+    line-height: 30px;
+    position: absolute;
+    top: 15px;
+    left: 150px;
+}
+.box-content>ul>li>a>img{
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 10px;
+    left: 50px;
+}
+.box-content>ul>li:hover{
+    background-color: #ffff66;
+}
+/*-----------------------aside------------------------------- */
+
+aside{
+    float: right;
+    width: 25%;
+    height: 1650px;
+    background-image: url("/Assignment/image/right_image.jpg");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+aside>ul{
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+aside>ul>li{
+    display: block;
+    margin: 10px 0px;
+    padding-left: 20px;
+    line-height: 40px;
+    background-color: #ff6600;
+}
+aside>ul>li>a{
+    margin: 0px;
+    padding: 5px 20px;
+    display: block;
+    font-size: large;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    background: url("/Assignment/image/vMenu.png") no-repeat left;
+    background-size: 16px;
+}
+aside>ul>li>a:hover{
+    font-size: x-large;
+    background: url("/Assignment/image/hoverVMenu.jpg") no-repeat left;
+    background-size: 16px;
+}
+aside>ul>li:hover{
+    background-color: #ffa366;
+}
+aside>div>img{
+    margin: 10px 15px;
+    
+    border-radius: 30px;
+    box-shadow: #ffd11a 0px 0px 5px 5px;
+}
+
+/* -----------------------------footer------------------------ */
+
+footer{
+    margin: 0px;
+    padding: 15px;
+    height: 50px;
+    width: 98.5%;
+    background-color: #595959;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+}
+footer>div{
+    /* text-align: center; */
+    margin-left: 35%;
+    padding: 0px;
+    overflow: auto;
+    /* background-color: violet; */
+}
+footer>div>img{
+    margin: 0px;
+    padding: 0px;
+    color: white;
+    float: left;
+}
+footer>div>div{
+    margin-left: 40px;
+    margin-top:5px ;
+    /* background-color: wheat; */
+    width: 300px;
+    text-align: center;
+}
+footer>div>div>h3{
+    margin: 0px;
+    padding: 0px;
+    color: white;
+}
+footer>div>div>h5{
+    margin: 0px;
+    padding: 0px;
+    color: white;
+}
