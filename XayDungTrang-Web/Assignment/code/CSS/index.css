@@ -13,7 +13,7 @@ a,h2,h3,h4,h5{
 
 /*-----------------------Header------------------------------- */
 header{
-    background: url("/Assignment/image/header_image.jpg");
+    background: url("../image/header_image.jpg");
     background-size: 100% 100%;
     height: 300px;
     margin: 0px;
@@ -185,8 +185,7 @@ article>div.box-contents>div.box-content{
     margin: 5px;
     padding: 0px;
     display: block;
-    border-radius: 15px;
-    background-image: url("/Assignment/image/select.png");
+    background-image: url("../image/select.png");
     background-repeat: no-repeat;
     background-position: left;
     background-color: #ffff99;
@@ -223,7 +222,7 @@ aside{
     float: right;
     width: 25%;
     height: 1650px;
-    background-image: url("/Assignment/image/right_image.jpg");
+    background-image: url("../image/right_image.jpg");
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
@@ -247,12 +246,12 @@ aside>ul>li>a{
     font-weight: bold;
     text-decoration: none;
     color: black;
-    background: url("/Assignment/image/vMenu.png") no-repeat left;
+    background: url("../image/vMenu.png") no-repeat left;
     background-size: 16px;
 }
 aside>ul>li>a:hover{
     font-size: x-large;
-    background: url("/Assignment/image/hoverVMenu.jpg") no-repeat left;
+    background: url("../image/hoverVMenu.jpg") no-repeat left;
     background-size: 16px;
 }
 aside>ul>li:hover{
