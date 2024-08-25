@@ -582,6 +582,87 @@ class AccountFirebase {
 
 /***/ }),
 
+/***/ "1+ss":
+/*!***************************************************************************!*\
+  !*** ./src/app/service/firebase-cloud-firestore/post-firebase.service.ts ***!
+  \***************************************************************************/
+/*! exports provided: PostFirebaseService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PostFirebaseService", function() { return PostFirebaseService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var src_app_model_post__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/model/post */ "S19W");
+/* harmony import */ var _angular_fire_firestore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/fire/firestore */ "I/3d");
+/* harmony import */ var _angular_fire_auth__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/fire/auth */ "UbJi");
+
+
+
+
+
+
+
+class PostFirebaseService {
+    constructor(firestore, fireauth) {
+        this.firestore = firestore;
+        this.fireauth = fireauth;
+        this.username = "duongnh";
+        this.dbPostpath = "/posts";
+        this.fireauth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log(`user login ${user.displayName}`);
+            }
+            else {
+            }
+        });
+        this.fireauth.credential.subscribe;
+    }
+    getAllPost() {
+        const posts = this.firestore.collection(this.dbPostpath, ref => ref.where('username', '==', this.username)
+            .orderBy('dateCreate', 'desc'));
+        return posts.snapshotChanges().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(changes => changes.map(c => {
+            const post = Object.assign(Object.assign({}, c.payload.doc.data()), { id: c.payload.doc.id });
+            return post;
+        })));
+    }
+    getPostById(id) {
+        const posts = this.firestore.collection(this.dbPostpath, ref => ref.where('username', '==', this.username)
+            .where('id', '==', id));
+        return posts.snapshotChanges().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(changes => changes.map(c => {
+            const post = Object.assign(Object.assign({}, c.payload.doc.data()), { id: c.payload.doc.id });
+            return post;
+        })[0]));
+    }
+    addPost(post) {
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(this.firestore.collection(`${this.dbPostpath}`).add(Object.assign(Object.assign({}, post), { dateCreate: post.dateCreate.toISOString(), accountDTO: null, username: this.username })).then(doc => {
+            doc.update({ id: doc.id });
+            return Object.assign(Object.assign({}, post), { id: doc.id });
+        }));
+    }
+    updatePost(post) {
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(this.firestore.doc(`${this.dbPostpath}/${post.id}`).update(Object.assign(Object.assign({}, post), { accountDTO: null })).then(_ => {
+            return post;
+        }));
+    }
+    deletePost(id) {
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(this.firestore.doc(`${this.dbPostpath}/${id}`).delete().then(_ => new src_app_model_post__WEBPACK_IMPORTED_MODULE_3__["Post"]()));
+    }
+}
+PostFirebaseService.ɵfac = function PostFirebaseService_Factory(t) { return new (t || PostFirebaseService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_fire_firestore__WEBPACK_IMPORTED_MODULE_4__["AngularFirestore"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_fire_auth__WEBPACK_IMPORTED_MODULE_5__["AngularFireAuth"])); };
+PostFirebaseService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: PostFirebaseService, factory: PostFirebaseService.ɵfac, providedIn: 'root' });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](PostFirebaseService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+        args: [{
+                providedIn: 'root'
+            }]
+    }], function () { return [{ type: _angular_fire_firestore__WEBPACK_IMPORTED_MODULE_4__["AngularFirestore"] }, { type: _angular_fire_auth__WEBPACK_IMPORTED_MODULE_5__["AngularFireAuth"] }]; }, null); })();
+
+
+/***/ }),
+
 /***/ "2QpE":
 /*!**********************************************!*\
   !*** ./src/app/service/component.service.ts ***!
@@ -1488,6 +1569,13 @@ class AccountFirebaseService {
     getWorkExperienceAccountByUsername() {
         return this.getAdditonalInformationOfUser(this.dbWorkExperiencePath).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(changes => this.mappingService.mappingWorkExperienceArray(changes)));
     }
+    getLinkSocialNetworkById() {
+        const user = this.firestore.collection(this.dbAccountPath, ref => ref.where('username', '==', this.username));
+        return user.snapshotChanges().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(changes => changes.map(c => {
+            const account = Object.assign(Object.assign({}, c.payload.doc.data()), { id: c.payload.doc.id });
+            return this.mappingService.mappingAccount(account);
+        })[0]));
+    }
     updateByUsername(account) {
         const promiseUpdateInfo = [];
         // update user
@@ -2122,7 +2210,7 @@ class PostDetailComponent {
         if (this.currentAccount) {
             const url = this.router.url;
             const indexDetail = url.lastIndexOf('/');
-            const idPost = +url.substring(indexDetail + 1);
+            const idPost = url.substring(indexDetail + 1);
             this.router.navigateByUrl(`/duongnh/post/edit/${idPost}`);
         }
     }
@@ -2584,9 +2672,15 @@ class MappingService {
         if (accountMapping.postDTOs) {
             account.postDTOs = this.mappingPostArray(accountMapping.postDTOs);
         }
-        account.skillDTOs = this.mappingSkillArray(accountMapping.skillDTOs);
-        account.educationDTOs = this.mappingEducationArray(accountMapping.educationDTOs);
-        account.workExperienceDTOs = this.mappingWorkExperienceArray(accountMapping.workExperienceDTOs);
+        if (accountMapping.skillDTOs) {
+            account.skillDTOs = this.mappingSkillArray(accountMapping.skillDTOs);
+        }
+        if (accountMapping.educationDTOs) {
+            account.educationDTOs = this.mappingEducationArray(accountMapping.educationDTOs);
+        }
+        if (accountMapping.workExperienceDTOs) {
+            account.workExperienceDTOs = this.mappingWorkExperienceArray(accountMapping.workExperienceDTOs);
+        }
         return account;
     }
     mappingAccountToFirebase(accountMapping) {
@@ -2794,7 +2888,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AmendPostComponent", function() { return AmendPostComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var src_app_model_account__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/model/account */ "gGTi");
-/* harmony import */ var src_app_service_account_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/service/account.service */ "xbHj");
+/* harmony import */ var src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/service/firebase-cloud-firestore/account-firebase.service */ "A2T0");
 /* harmony import */ var _common_navbar_navbar_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../common/navbar/navbar.component */ "iDpr");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "tyNb");
 
@@ -2804,20 +2898,22 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class AmendPostComponent {
-    constructor(accountService) {
-        this.accountService = accountService;
+    constructor(
+    // private accountService: AccountService
+    accountFirebaseService) {
+        this.accountFirebaseService = accountFirebaseService;
         this.account = new src_app_model_account__WEBPACK_IMPORTED_MODULE_1__["Account"]();
     }
     ngOnInit() {
         this.getLinkSocialNetworkById();
     }
     getLinkSocialNetworkById() {
-        this.accountService.getLinkSocialNetworkById().subscribe((res) => {
-            this.account = res.body;
+        this.accountFirebaseService.getLinkSocialNetworkById().subscribe((res) => {
+            this.account = res;
         });
     }
 }
-AmendPostComponent.ɵfac = function AmendPostComponent_Factory(t) { return new (t || AmendPostComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_account_service__WEBPACK_IMPORTED_MODULE_2__["AccountService"])); };
+AmendPostComponent.ɵfac = function AmendPostComponent_Factory(t) { return new (t || AmendPostComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_2__["AccountFirebaseService"])); };
 AmendPostComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: AmendPostComponent, selectors: [["app-amend-post"]], decls: 2, vars: 1, consts: [[3, "urlGithub"]], template: function AmendPostComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "app-navbar", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "router-outlet");
@@ -2831,7 +2927,7 @@ AmendPostComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
                 templateUrl: './amend-post.component.html',
                 styleUrls: ['./amend-post.component.css']
             }]
-    }], function () { return [{ type: src_app_service_account_service__WEBPACK_IMPORTED_MODULE_2__["AccountService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_2__["AccountFirebaseService"] }]; }, null); })();
 
 
 /***/ }),
@@ -3184,7 +3280,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fortawesome_free_brands_svg_icons__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fortawesome/free-brands-svg-icons */ "8tEE");
 /* harmony import */ var src_app_model_account__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/model/account */ "gGTi");
 /* harmony import */ var src_app_model_post__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/model/post */ "S19W");
-/* harmony import */ var src_app_service_post_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/service/post.service */ "++6F");
+/* harmony import */ var src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/service/firebase-cloud-firestore/post-firebase.service */ "1+ss");
 /* harmony import */ var src_app_service_date_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! src/app/service/date.service */ "a8YB");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/router */ "tyNb");
 /* harmony import */ var src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! src/app/service/firebase-cloud-firestore/account-firebase.service */ "A2T0");
@@ -3262,11 +3358,13 @@ function PostAddComponent_div_21_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.formPost.get("content").errors == null ? null : ctx_r4.formPost.get("content").errors.required);
 } }
 class PostAddComponent {
-    constructor(fb, postService, dateService, route, router, 
+    constructor(fb, 
+    // private postService: PostService,
+    postFirebaseService, dateService, route, router, 
     // private accountService: AccountService
     accountFirebaseService) {
         this.fb = fb;
-        this.postService = postService;
+        this.postFirebaseService = postFirebaseService;
         this.dateService = dateService;
         this.route = route;
         this.router = router;
@@ -3308,7 +3406,7 @@ class PostAddComponent {
         else {
             post.dateCreate = this.dateService.getDayNow();
             console.log('INSERT', post);
-            this.postService.addPost(post).subscribe({
+            this.postFirebaseService.addPost(post).subscribe({
                 next: (next) => {
                     console.log(next);
                 },
@@ -3323,7 +3421,7 @@ class PostAddComponent {
         }
     }
     updatePost(post) {
-        this.postService.updatePost(post).subscribe({
+        this.postFirebaseService.updatePost(post).subscribe({
             next: (next) => {
                 console.log('ADD POST: ' + next);
             },
@@ -3344,7 +3442,7 @@ class PostAddComponent {
             return;
         }
         const idDelete = this.postEditting.id;
-        this.postService.deletePost(idDelete).subscribe(post => {
+        this.postFirebaseService.deletePost(idDelete).subscribe(post => {
             console.log(post);
             this.router.navigateByUrl('/duongnh/home');
         });
@@ -3355,7 +3453,7 @@ class PostAddComponent {
         this.postPreview = this.formPost.get('content').value;
     }
 }
-PostAddComponent.ɵfac = function PostAddComponent_Factory(t) { return new (t || PostAddComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormBuilder"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_post_service__WEBPACK_IMPORTED_MODULE_5__["PostService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_date_service__WEBPACK_IMPORTED_MODULE_6__["DateService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_7__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_7__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_8__["AccountFirebaseService"])); };
+PostAddComponent.ɵfac = function PostAddComponent_Factory(t) { return new (t || PostAddComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormBuilder"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_5__["PostFirebaseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_date_service__WEBPACK_IMPORTED_MODULE_6__["DateService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_7__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_7__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_8__["AccountFirebaseService"])); };
 PostAddComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: PostAddComponent, selectors: [["app-post-add"]], inputs: { postEditting: "postEditting", flagEdit: "flagEdit" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]], decls: 34, vars: 11, consts: [[1, "full-background"], [1, "form-post"], [3, "formGroup", "ngSubmit"], [1, "title-form"], ["type", "text", "formControlName", "heading", "placeholder", "Post heading", 1, "input-text"], [4, "ngIf"], ["type", "text", "formControlName", "subHeading", "placeholder", "Post subheading", 1, "input-text"], ["type", "text", "formControlName", "urlImage", "placeholder", "Post background image (enter a URL)", 1, "input-text"], [1, "note-input"], ["formControlName", "content", "id", "", "cols", "100", "placeholder", "Post body text (markdown supported)", 1, "input-text", "input-text-area", 3, "keyup"], ["contentInput", ""], [2, "font-size", "12px", 3, "icon"], ["type", "submit", 1, "btn-post", 3, "disabled", "hidden"], [1, "post-preview"], ["markdown", "", 3, "data"], ["type", "button", 1, "btn-post", "btn-post-delete", 3, "hidden", "click"], ["class", "error-input", 4, "ngIf"], [1, "error-input"]], template: function PostAddComponent_Template(rf, ctx) { if (rf & 1) {
         const _r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
@@ -3434,7 +3532,7 @@ PostAddComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineC
                 templateUrl: './post-add.component.html',
                 styleUrls: ['./post-add.component.css']
             }]
-    }], function () { return [{ type: _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormBuilder"] }, { type: src_app_service_post_service__WEBPACK_IMPORTED_MODULE_5__["PostService"] }, { type: src_app_service_date_service__WEBPACK_IMPORTED_MODULE_6__["DateService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_7__["ActivatedRoute"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_7__["Router"] }, { type: src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_8__["AccountFirebaseService"] }]; }, { postEditting: [{
+    }], function () { return [{ type: _angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormBuilder"] }, { type: src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_5__["PostFirebaseService"] }, { type: src_app_service_date_service__WEBPACK_IMPORTED_MODULE_6__["DateService"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_7__["ActivatedRoute"] }, { type: _angular_router__WEBPACK_IMPORTED_MODULE_7__["Router"] }, { type: src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_8__["AccountFirebaseService"] }]; }, { postEditting: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
         }], flagEdit: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
@@ -4039,7 +4137,7 @@ NavbarComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCo
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PostListComponent", function() { return PostListComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var src_app_service_post_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/service/post.service */ "++6F");
+/* harmony import */ var src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/service/firebase-cloud-firestore/post-firebase.service */ "1+ss");
 /* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common */ "ofXK");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "tyNb");
 
@@ -4074,24 +4172,26 @@ function PostListComponent_ng_container_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](8, 4, post_r1.dateCreate, "MMMM d, y"), " ");
 } }
 class PostListComponent {
-    constructor(postService) {
-        this.postService = postService;
+    constructor(
+    // private postService: PostService,
+    postFirebaseService) {
+        this.postFirebaseService = postFirebaseService;
     }
     ngOnInit() {
         this.getAllPost();
     }
     getAllPost() {
         // let arrPost: Array<Post> = null;
-        this.postService.getAllPost().subscribe(responsePost => {
-            this.posts = responsePost.body;
-            this.posts = Array.from(this.posts).reverse();
+        this.postFirebaseService.getAllPost().subscribe(responsePost => {
+            this.posts = responsePost;
+            // this.posts = Array.from(this.posts).reverse();
         }, error => {
-            console.log('Loi dang nhap');
+            console.log(error);
             this.posts = [];
         });
     }
 }
-PostListComponent.ɵfac = function PostListComponent_Factory(t) { return new (t || PostListComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_post_service__WEBPACK_IMPORTED_MODULE_1__["PostService"])); };
+PostListComponent.ɵfac = function PostListComponent_Factory(t) { return new (t || PostListComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_1__["PostFirebaseService"])); };
 PostListComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: PostListComponent, selectors: [["app-post-list"]], decls: 2, vars: 1, consts: [[1, "body-blog", "font-style"], [4, "ngFor", "ngForOf"], [1, "post-item", 3, "routerLink"], [1, "title-post"], [1, "subtitle-post"], [1, "date-post"]], template: function PostListComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, PostListComponent_ng_container_1_Template, 9, 7, "ng-container", 1);
@@ -4107,7 +4207,7 @@ PostListComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefine
                 templateUrl: './post-list.component.html',
                 styleUrls: ['./post-list.component.css']
             }]
-    }], function () { return [{ type: src_app_service_post_service__WEBPACK_IMPORTED_MODULE_1__["PostService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_1__["PostFirebaseService"] }]; }, null); })();
 
 
 /***/ }),
@@ -4237,7 +4337,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var _model_post__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../model/post */ "S19W");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "tyNb");
-/* harmony import */ var _service_post_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../service/post.service */ "++6F");
+/* harmony import */ var src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/service/firebase-cloud-firestore/post-firebase.service */ "1+ss");
 /* harmony import */ var _modules_posts_post_add_post_add_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../modules/posts/post-add/post-add.component */ "aJmx");
 
 
@@ -4246,23 +4346,27 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class EditPostPageComponent {
-    constructor(route, postService) {
+    constructor(route, postFirebaseService
+    // private postService: PostService
+    ) {
         this.route = route;
-        this.postService = postService;
+        this.postFirebaseService = postFirebaseService;
         this.post = new _model_post__WEBPACK_IMPORTED_MODULE_1__["Post"]();
     }
     ngOnInit() {
         this.getPostEdit();
     }
     getPostEdit() {
-        const id = +this.route.snapshot.paramMap.get('id');
-        this.postService.getPostById(id).subscribe(responsePost => {
-            this.post = responsePost.body;
-            console.log('idPost:' + id, this.post);
+        const id = this.route.snapshot.paramMap.get('id');
+        this.postFirebaseService.getPostById(id).subscribe(responsePost => {
+            if (responsePost) {
+                this.post = responsePost;
+                console.log('idPost:' + id, this.post);
+            }
         });
     }
 }
-EditPostPageComponent.ɵfac = function EditPostPageComponent_Factory(t) { return new (t || EditPostPageComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_service_post_service__WEBPACK_IMPORTED_MODULE_3__["PostService"])); };
+EditPostPageComponent.ɵfac = function EditPostPageComponent_Factory(t) { return new (t || EditPostPageComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_3__["PostFirebaseService"])); };
 EditPostPageComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: EditPostPageComponent, selectors: [["app-edit-post-page"]], decls: 1, vars: 2, consts: [[3, "flagEdit", "postEditting"]], template: function EditPostPageComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "app-post-add", 0);
     } if (rf & 2) {
@@ -4275,7 +4379,7 @@ EditPostPageComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵde
                 templateUrl: './edit-post-page.component.html',
                 styleUrls: ['./edit-post-page.component.css']
             }]
-    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"] }, { type: _service_post_service__WEBPACK_IMPORTED_MODULE_3__["PostService"] }]; }, null); })();
+    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"] }, { type: src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_3__["PostFirebaseService"] }]; }, null); })();
 
 
 /***/ }),
@@ -4411,7 +4515,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var _model_post__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../model/post */ "S19W");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "tyNb");
-/* harmony import */ var _service_post_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../service/post.service */ "++6F");
+/* harmony import */ var src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/service/firebase-cloud-firestore/post-firebase.service */ "1+ss");
 /* harmony import */ var _common_header_header_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../common/header/header.component */ "uU1w");
 /* harmony import */ var _modules_posts_post_detail_post_detail_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../modules/posts/post-detail/post-detail.component */ "R5or");
 
@@ -4422,23 +4526,25 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class PostDetailPageComponent {
-    constructor(route, postService) {
+    constructor(route, postFirebaseService
+    // private postService: PostService
+    ) {
         this.route = route;
-        this.postService = postService;
+        this.postFirebaseService = postFirebaseService;
         this.post = new _model_post__WEBPACK_IMPORTED_MODULE_1__["Post"]();
     }
     ngOnInit() {
         this.getPostById();
     }
     getPostById() {
-        const id = +this.route.snapshot.paramMap.get('id');
-        this.postService.getPostById(id).subscribe(responsePost => {
-            this.post = responsePost.body;
+        const id = this.route.snapshot.paramMap.get('id');
+        this.postFirebaseService.getPostById(id).subscribe(responsePost => {
+            this.post = responsePost;
             console.log(this.post, responsePost);
         });
     }
 }
-PostDetailPageComponent.ɵfac = function PostDetailPageComponent_Factory(t) { return new (t || PostDetailPageComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_service_post_service__WEBPACK_IMPORTED_MODULE_3__["PostService"])); };
+PostDetailPageComponent.ɵfac = function PostDetailPageComponent_Factory(t) { return new (t || PostDetailPageComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_3__["PostFirebaseService"])); };
 PostDetailPageComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: PostDetailPageComponent, selectors: [["app-post-detail-page"]], decls: 2, vars: 6, consts: [[3, "flagHome", "heading", "subHeading", "urlImage", "dateCreate"], [3, "content"]], template: function PostDetailPageComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "app-header", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "app-post-detail", 1);
@@ -4454,7 +4560,7 @@ PostDetailPageComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵ
                 templateUrl: './post-detail-page.component.html',
                 styleUrls: ['./post-detail-page.component.css']
             }]
-    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"] }, { type: _service_post_service__WEBPACK_IMPORTED_MODULE_3__["PostService"] }]; }, null); })();
+    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"] }, { type: src_app_service_firebase_cloud_firestore_post_firebase_service__WEBPACK_IMPORTED_MODULE_3__["PostFirebaseService"] }]; }, null); })();
 
 
 /***/ }),
@@ -4643,7 +4749,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DefaultComponent", function() { return DefaultComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var src_app_model_account__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/model/account */ "gGTi");
-/* harmony import */ var src_app_service_account_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/service/account.service */ "xbHj");
+/* harmony import */ var src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/service/firebase-cloud-firestore/account-firebase.service */ "A2T0");
 /* harmony import */ var _common_navbar_navbar_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../common/navbar/navbar.component */ "iDpr");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "tyNb");
 /* harmony import */ var _common_footer_footer_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../common/footer/footer.component */ "acaO");
@@ -4655,20 +4761,22 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class DefaultComponent {
-    constructor(accountService) {
-        this.accountService = accountService;
+    constructor(
+    // private accountService: AccountService
+    accountFirebaseService) {
+        this.accountFirebaseService = accountFirebaseService;
         this.account = new src_app_model_account__WEBPACK_IMPORTED_MODULE_1__["Account"]();
     }
     ngOnInit() {
         this.getLinkSocialNetworkById();
     }
     getLinkSocialNetworkById() {
-        this.accountService.getLinkSocialNetworkById().subscribe((res) => {
-            this.account = res.body;
+        this.accountFirebaseService.getLinkSocialNetworkById().subscribe((res) => {
+            this.account = res;
         });
     }
 }
-DefaultComponent.ɵfac = function DefaultComponent_Factory(t) { return new (t || DefaultComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_account_service__WEBPACK_IMPORTED_MODULE_2__["AccountService"])); };
+DefaultComponent.ɵfac = function DefaultComponent_Factory(t) { return new (t || DefaultComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_2__["AccountFirebaseService"])); };
 DefaultComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: DefaultComponent, selectors: [["app-default"]], decls: 3, vars: 4, consts: [[3, "urlGithub"], [3, "urlTwitter", "urlFacebook", "urlGithub"]], template: function DefaultComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "app-navbar", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "router-outlet");
@@ -4685,7 +4793,7 @@ DefaultComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineC
                 templateUrl: './default.component.html',
                 styleUrls: ['./default.component.css']
             }]
-    }], function () { return [{ type: src_app_service_account_service__WEBPACK_IMPORTED_MODULE_2__["AccountService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_service_firebase_cloud_firestore_account_firebase_service__WEBPACK_IMPORTED_MODULE_2__["AccountFirebaseService"] }]; }, null); })();
 
 
 /***/ }),
